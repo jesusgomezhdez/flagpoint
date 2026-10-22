@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Huerta Viva · Finalizar compra</title>
+    <!--
+      Página de demostración ficticia para las capturas de la tienda.
+      Tiene errores a propósito para anotarlos con Flagpoint:
+        1. El total no incluye el costo de envío ($1,248 + $99 ≠ $1,248).
+        2. El botón "Pagar ahora" está desalineado respecto al resumen.
+        3. Typo: "Envio gratís" (acentos mal puestos).
+        4. El texto del cupón se corta y la etiqueta "Nuevo" se encima.
+    -->
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background: #f7f5f0;
+        color: #1c2b22;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 56px;
+        background: #ffffff;
+        border-bottom: 1px solid #e7e3d8;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 800;
+        color: #1f6b43;
+      }
+
+      .logo span {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        background: #1f6b43;
+        color: #fff;
+        font-size: 18px;
+      }
+
+      .links {
+        display: flex;
+        gap: 28px;
+        font-size: 14px;
+        color: #57685d;
+      }
+
+      .steps {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 26px 56px 0;
+        font-size: 13px;
+        color: #8a968d;
+      }
+
+      .steps b {
+        color: #1f6b43;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 32px;
+        padding: 20px 56px 56px;
+      }
+
+      h1 {
+        font-size: 28px;
+        letter-spacing: -0.02em;
+        margin-bottom: 18px;
+      }
+
+      .panel {
+        background: #fff;
+        border: 1px solid #e7e3d8;
+        border-radius: 16px;
+        padding: 24px;
+      }
+
+      .item {
+        display: grid;
+        grid-template-columns: 72px 1fr auto;
+        gap: 16px;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid #f0ede4;
+      }
+
+      .item:last-child {
+        border-bottom: 0;
+      }
+
+      .thumb {
+        width: 72px;
+        height: 72px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        font-size: 34px;
+      }
+
+      .name {
+        font-weight: 600;
+      }
+
+      .meta {
+        margin-top: 4px;
+        font-size: 13px;
+        color: #7b877f;
+      }
+
+      .price {
+        font-weight: 700;
+      }
+
+      .shipping {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: #57685d;
+        margin-bottom: 6px;
+      }
+
+      .field div {
+        padding: 11px 14px;
+        border: 1px solid #ddd8cb;
+        border-radius: 10px;
+        font-size: 14px;
+        background: #fcfbf8;
+      }
+
+      .summary h2 {
+        font-size: 18px;
+        margin-bottom: 16px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 9px 0;
+        font-size: 15px;
+        color: #3d4d42;
+      }
+
+      .row.total {
+        margin-top: 8px;
+        padding-top: 16px;
+        border-top: 1px dashed #ddd8cb;
+        font-size: 20px;
+        font-weight: 800;
+        color: #1c2b22;
+      }
+
+      .free {
+        display: inline-block;
+        margin-top: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #1f6b43;
+      }
+
+      .coupon {
+        position: relative;
+        margin-top: 18px;
+        display: flex;
+        gap: 8px;
+      }
+
+      .coupon div {
+        flex: 1;
+        padding: 10px 12px;
+        border: 1px solid #ddd8cb;
+        border-radius: 10px;
+        font-size: 13px;
+        color: #7b877f;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 150px;
+      }
+
+      .coupon button {
+        padding: 0 14px;
+        border: 1px solid #1f6b43;
+        border-radius: 10px;
+        background: #fff;
+        color: #1f6b43;
+        font-weight: 600;
+      }
+
+      .badge {
+        position: absolute;
+        right: 58px;
+        top: -9px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #f59e0b;
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      /* Error a propósito: el botón no ocupa el ancho del panel y queda corrido. */
+      .pay {
+        display: block;
+        width: 84%;
+        margin: 22px 0 0 56px;
+        padding: 15px;
+        border: 0;
+        border-radius: 12px;
+        background: #1f6b43;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .secure {
+        margin-top: 12px;
+        text-align: center;
+        font-size: 12px;
+        color: #8a968d;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo"><span>🌱</span>Huerta Viva</div>
+      <div class="links">
+        <span>Frutas</span><span>Verduras</span><span>Canastas</span><span>Mi cuenta</span><span>🛒 3</span>
+      </div>
+    </nav>
+
+    <div class="steps"><span>Carrito</span>›<b>Envío y pago</b>›<span>Confirmación</span></div>
+
+    <main>
+      <section>
+        <h1>Finalizar compra</h1>
+        <div class="panel">
+          <div class="item">
+            <div class="thumb" style="background: #fde8e4">🍓</div>
+            <div><div class="name">Fresas orgánicas</div><div class="meta">Caja 500 g · Cantidad 2</div></div>
+            <div class="price">$318</div>
+          </div>
+          <div class="item">
+            <div class="thumb" style="background: #e5f3e6">🥑</div>
+            <div><div class="name">Aguacate Hass</div><div class="meta">Malla 1 kg · Cantidad 1</div></div>
+            <div class="price">$140</div>
+          </div>
+          <div class="item">
+            <div class="thumb" style="background: #fff3d6">🧺</div>
+            <div><div class="name">Canasta semanal familiar</div><div class="meta">12 productos de temporada · Cantidad 1</div></div>
+            <div class="price">$790</div>
+          </div>
+
+          <div class="shipping">
+            <div class="field"><label>Nombre</label><div>Ana López</div></div>
+            <div class="field"><label>Teléfono</label><div>55 1234 5678</div></div>
+            <div class="field"><label>Dirección</label><div>Av. de las Flores 123, Col. Centro</div></div>
+            <div class="field"><label>Horario de entrega</label><div>Sábado, 9:00 – 13:00</div></div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="panel summary">
+          <h2>Resumen del pedido</h2>
+          <div class="row"><span>Subtotal (3 productos)</span><span>$1,248</span></div>
+          <div class="row">
+            <span>Envío<br /><span class="free">Envio gratís en compras +$1,500</span></span><span>$99</span>
+          </div>
+          <div class="row total"><span>Total</span><span>$1,248</span></div>
+
+          <div class="coupon">
+            <span class="badge">Nuevo</span>
+            <div>Código de descuento o tarjeta de regalo</div>
+            <button>Aplicar</button>
+          </div>
+
+          <button class="pay">Pagar ahora</button>
+          <p class="secure">🔒 Pago seguro · Datos de ejemplo</p>
+        </div>
+      </aside>
+    </main>
+  </body>
+</html>

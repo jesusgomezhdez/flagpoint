@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flagpoint · Captura para la tienda 1280×800</title>
+    <!--
+      Parámetros (query string):
+        img       ruta de la captura, relativa a esta carpeta (p. ej. captures/editor-1.png)
+        title     título grande
+        subtitle  texto secundario
+    -->
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html,
+      body {
+        width: 1280px;
+        height: 800px;
+        overflow: hidden;
+      }
+
+      body {
+        position: relative;
+        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #0f172a;
+        /* Mismo fondo que el editor: manchas pastel + cuadrícula de puntos. */
+        background:
+          radial-gradient(circle, rgb(15 23 42 / 0.14) 1.2px, transparent 1.7px) 11px 11px / 22px 22px,
+          radial-gradient(40% 55% at 4% 8%, rgb(251 207 232 / 0.85), transparent 70%),
+          radial-gradient(40% 55% at 96% 4%, rgb(191 219 254 / 0.9), transparent 70%),
+          radial-gradient(45% 55% at 98% 98%, rgb(167 243 208 / 0.7), transparent 70%),
+          radial-gradient(42% 50% at 2% 98%, rgb(254 215 170 / 0.7), transparent 70%),
+          radial-gradient(38% 40% at 50% 60%, rgb(221 214 254 / 0.6), transparent 75%),
+          #f6f6f9;
+      }
+
+      /* Texto a la izquierda, captura completa a la derecha. */
+      header {
+        position: absolute;
+        left: 60px;
+        top: 50%;
+        width: 320px;
+        transform: translateY(-50%);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 14px 5px 6px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+        background: linear-gradient(135deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.55));
+        border: 1px solid rgb(255 255 255 / 0.85);
+        box-shadow: 0 6px 16px -8px rgb(15 23 42 / 0.2);
+      }
+
+      .brand img {
+        width: 28px;
+        height: 28px;
+      }
+
+      h1 {
+        margin-top: 22px;
+        font-size: 42px;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.1;
+      }
+
+      p {
+        margin-top: 16px;
+        font-size: 18px;
+        line-height: 1.5;
+        font-weight: 500;
+        color: #64748b;
+      }
+
+      /* Ventana de navegador con la captura completa, sin recortes. */
+      .window {
+        position: absolute;
+        right: 52px;
+        top: 50%;
+        width: 840px;
+        transform: translateY(-50%);
+        padding: 0 8px 8px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.6));
+        border: 1px solid rgb(255 255 255 / 0.9);
+        box-shadow:
+          inset 0 1px 0 rgb(255 255 255 / 0.95),
+          0 40px 80px -30px rgb(15 23 42 / 0.4),
+          0 12px 28px -12px rgb(15 23 42 / 0.18);
+      }
+
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 40px;
+        padding: 0 8px;
+      }
+
+      .dots {
+        display: flex;
+        gap: 7px;
+      }
+
+      .dots span {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #cbd5e1;
+      }
+
+      .dots span:nth-child(1) { background: #fda4af; }
+      .dots span:nth-child(2) { background: #fde68a; }
+      .dots span:nth-child(3) { background: #86efac; }
+
+      .url {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 auto;
+        padding: 5px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        color: #64748b;
+        text-align: center;
+        background: rgb(241 245 249 / 0.9);
+      }
+
+      .shot {
+        width: 100%;
+        min-height: 480px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #e2e8f0;
+      }
+
+      .shot img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .shot:has(img) {
+        min-height: 0;
+      }
+
+      .placeholder {
+        display: flex;
+        height: 480px;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed #94a3b8;
+        border-radius: 12px;
+        font-size: 18px;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span class="brand"><img src="../public/icon/48.png" alt="" />Flagpoint</span>
+      <h1 id="title">Señala el bug exacto</h1>
+      <p id="subtitle">Flechas, formas y post-its sobre la pestaña que estás probando.</p>
+    </header>
+
+    <div class="window">
+      <div class="bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="url">Flagpoint · Editor</div>
+      </div>
+      <div class="shot" id="shot">
+        <div class="placeholder">Tu captura aquí (completa, cualquier proporción)</div>
+      </div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(location.search);
+      const title = params.get('title');
+      const subtitle = params.get('subtitle');
+      const img = params.get('img');
+      if (title) document.getElementById('title').textContent = title;
+      if (subtitle) document.getElementById('subtitle').textContent = subtitle;
+      if (img) {
+        const el = document.createElement('img');
+        el.src = img;
+        el.alt = '';
+        document.getElementById('shot').replaceChildren(el);
+      }
+    </script>
+  </body>
+</html>

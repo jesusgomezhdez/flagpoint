@@ -10,7 +10,8 @@ export default defineConfig({
   }),
   manifest: {
     name: 'Flagpoint',
-    description: 'Captura la pestaña visible y anótala para reportar hallazgos de QA.',
+    // Es también la descripción corta de Chrome Web Store (máx. 132 caracteres).
+    description: 'Captura la pestaña y anótala con flechas, formas, texto y post-its para reportar bugs y hallazgos de QA.',
     permissions: ['activeTab', 'storage'],
     // Sin popup: el clic en el ícono dispara action.onClicked en el background.
     action: {
