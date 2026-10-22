@@ -1,0 +1,78 @@
+@import 'tailwindcss';
+
+/* Fuente de las anotaciones del canvas. Excalifont © Excalidraw, OFL-1.1. */
+@font-face {
+  font-family: 'Excalifont';
+  src: url('../../assets/fonts/excalifont-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --color-accent: #6366f1;
+}
+
+/* Superficie de vidrio para los paneles flotantes. */
+@utility glass {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.74), rgb(255 255 255 / 0.5));
+  backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgb(255 255 255 / 0.8);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.9),
+    0 16px 40px -16px rgb(15 23 42 / 0.22),
+    0 2px 8px -2px rgb(15 23 42 / 0.08);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #f6f6f9;
+  color: var(--color-slate-800);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fondo de la pantalla de edición: manchas pastel muy difuminadas. */
+.app-backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(42% 52% at 8% 12%, rgb(251 207 232 / 0.75), transparent 70%),
+    radial-gradient(40% 50% at 92% 8%, rgb(191 219 254 / 0.8), transparent 70%),
+    radial-gradient(45% 55% at 96% 92%, rgb(167 243 208 / 0.65), transparent 70%),
+    radial-gradient(42% 50% at 6% 94%, rgb(254 215 170 / 0.6), transparent 70%),
+    radial-gradient(38% 42% at 50% 55%, rgb(221 214 254 / 0.55), transparent 75%),
+    #f6f6f9;
+}
+
+/* Cuadrícula de puntos encima de los degradados, como una mesa de trabajo. */
+.app-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgb(15 23 42 / 0.16) 1px, transparent 1.4px);
+  background-size: 18px 18px;
+  background-position: 9px 9px;
+}
+
+/* Marco de la captura: esquinas redondeadas y sombra profunda pero suave. */
+.canvas-frame .canvas-container {
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.9),
+    0 0 0 6px rgb(255 255 255 / 0.35),
+    0 40px 80px -32px rgb(15 23 42 / 0.4),
+    0 12px 24px -12px rgb(15 23 42 / 0.18);
+}
+
+.canvas-frame .canvas-container canvas {
+  border-radius: 14px;
+}
