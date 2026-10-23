@@ -3,9 +3,11 @@ import { CircleAlert, LoaderCircle } from 'lucide-react';
 interface MessageScreenProps {
   variant: 'loading' | 'error';
   message: string;
+  /** Título del estado de error. */
+  title?: string;
 }
 
-export function MessageScreen({ variant, message }: MessageScreenProps) {
+export function MessageScreen({ variant, message, title = 'No se pudo capturar la página' }: MessageScreenProps) {
   return (
     <div className="relative flex h-full items-center justify-center p-8">
       <div className="app-backdrop" />
@@ -17,7 +19,7 @@ export function MessageScreen({ variant, message }: MessageScreenProps) {
             <CircleAlert size={24} />
           </span>
         )}
-        {variant === 'error' && <h1 className="text-base font-semibold text-slate-900">No se pudo capturar la página</h1>}
+        {variant === 'error' && <h1 className="text-base font-semibold text-slate-900">{title}</h1>}
         <p className="text-sm leading-relaxed text-slate-500">{message}</p>
       </div>
     </div>

@@ -11,6 +11,9 @@ importers:
       fabric:
         specifier: ^7.4.0
         version: 7.4.0
+      fix-webm-duration:
+        specifier: 1.0.6
+        version: 1.0.6
       lucide-react:
         specifier: ^1.60.0
         version: 1.60.0(@types/react@19.3.0)(react@19.3.1)
@@ -1061,6 +1064,9 @@ packages:
   first-chunk-stream@3.0.0:
     resolution: {integrity: sha512-LNRvR4hr/S8cXXkIY5pTgVP7L3tq6LlYWcg9nWBuW7o1NMxKZo6oOVa/6GIekMGI0Iw7uC+HWimMe9u/VAeKqw==}
     engines: {node: '>=8'}
+
+  fix-webm-duration@1.0.6:
+    resolution: {integrity: sha512-zVAqi4gE+8ywxJuAyV/rlJVX6CMtvyapEbQx6jyoeX9TMjdqAlt/FdG5d7rXSSkDVzTvS0H7CtwzHcH/vh4FPA==}
 
   flat-cache@4.0.1:
     resolution: {integrity: sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==}
@@ -3318,6 +3324,8 @@ snapshots:
       xml2js: 0.6.2
 
   first-chunk-stream@3.0.0: {}
+
+  fix-webm-duration@1.0.6: {}
 
   flat-cache@4.0.1:
     dependencies:

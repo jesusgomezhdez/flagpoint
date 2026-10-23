@@ -11,11 +11,19 @@ export default defineConfig({
   manifest: {
     name: 'Flagpoint',
     // Es también la descripción corta de Chrome Web Store (máx. 132 caracteres).
-    description: 'Captura la pestaña y anótala con flechas, formas, texto y post-its para reportar bugs y hallazgos de QA.',
-    permissions: ['activeTab', 'storage'],
-    // Sin popup: el clic en el ícono dispara action.onClicked en el background.
+    description: 'Captura o graba en video la pestaña y anota las capturas con flechas, formas, texto y post-its para reportar bugs de QA.',
+    // tabCapture + offscreen: grabar la pestaña en un documento oculto (el service worker no puede usar MediaRecorder).
+    // scripting: inyectar el indicador de grabación en la pestaña grabada (con el acceso de activeTab).
+    permissions: ['activeTab', 'storage', 'tabCapture', 'offscreen', 'scripting'],
+    // El popup (entrypoints/popup) deja elegir entre captura y grabación.
     action: {
-      default_title: 'Capturar pestaña con Flagpoint',
+      default_title: 'Flagpoint',
+    },
+    commands: {
+      'stop-recording': {
+        suggested_key: { default: 'Alt+Shift+S' },
+        description: 'Detener la grabación de video',
+      },
     },
   },
 });

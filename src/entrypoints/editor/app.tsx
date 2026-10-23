@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Flag, Redo2, Trash2, Undo2 } from 'lucide-react';
+import { Redo2, Trash2, Undo2 } from 'lucide-react';
 import { ActionBar } from '@/components/action-bar';
 import { IconToolbar, type ToolbarItem } from '@/components/icon-toolbar';
 import { MessageScreen } from '@/components/message-screen';
+import { PageChip } from '@/components/page-chip';
 import { StyleBar } from '@/components/style-bar';
 import { Toast } from '@/components/toast';
 import type { EditorController, EditorState } from '@/core/editor/editor-controller';
@@ -65,7 +66,7 @@ function Editor({ capture }: { capture: CaptureResult }) {
       {controller && state && (
         <>
           <header className="pointer-events-none absolute inset-x-0 top-0 grid grid-cols-[1fr_auto_1fr] items-start gap-3 p-4 [&>*]:pointer-events-auto">
-            <PageChip capture={capture} />
+            <PageChip title={capture.context.title} url={capture.context.url} />
             <IconToolbar
               ariaLabel="Herramientas"
               items={controller.tools.list().map((tool) => ({
@@ -102,27 +103,6 @@ function Editor({ capture }: { capture: CaptureResult }) {
       )}
 
       <Toast toast={toast} />
-    </div>
-  );
-}
-
-function PageChip({ capture }: { capture: CaptureResult }) {
-  const { title, url } = capture.context;
-  let host = url;
-  try {
-    host = new URL(url).hostname;
-  } catch {
-    // URL vacía o inválida: se muestra tal cual.
-  }
-  return (
-    <div className="glass flex min-w-0 items-center gap-2.5 justify-self-start rounded-full py-1.5 pr-4 pl-1.5" title={url}>
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-400 via-fuchsia-400 to-orange-300 text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.4)]">
-        <Flag size={15} strokeWidth={2.5} />
-      </span>
-      <div className="flex min-w-0 flex-col leading-tight">
-        <span className="max-w-[28ch] truncate text-sm font-semibold text-slate-900">{title || host}</span>
-        <span className="max-w-[28ch] truncate text-[11px] text-slate-500">{host}</span>
-      </div>
     </div>
   );
 }

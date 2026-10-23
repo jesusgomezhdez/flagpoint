@@ -1,0 +1,6 @@
+/* El popup toma el tamaño de su contenido: sin la altura completa de las páginas. */
+html,
+body,
+#root {
+  height: auto;
+}

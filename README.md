@@ -1,7 +1,8 @@
 # Flagpoint
 
 Extensión de Chrome (Manifest V3) para capturar la pestaña visible y anotarla
-(marcador, flechas, formas, texto y post-its) al reportar hallazgos de QA.
+(marcador, flechas, formas, texto y post-its), o grabarla en video, al reportar
+hallazgos de QA.
 
 ## Requisitos
 
@@ -28,8 +29,20 @@ pnpm build          # genera .output/chrome-mv3
 
 ## Uso
 
-Al hacer clic en el ícono se captura la pestaña visible y se abre el editor en
-una pestaña nueva.
+Al hacer clic en el ícono se abre un menú con dos opciones:
+
+- **Capturar pantalla**: captura la pestaña visible y abre el editor en una
+  pestaña nueva.
+- **Grabar video**: graba la pestaña (solo imagen, sin audio, máx. 5 min). En
+  la pestaña aparece una píldora arrastrable con el tiempo y un botón ■ para
+  detener; el ícono muestra `REC`. Se detiene con ese botón, con **Detener y ver
+  video** en el popup, con `Alt+Shift+S` (configurable en
+  `chrome://extensions/shortcuts`), al cerrar la pestaña o al llegar al límite.
+  Al terminar se abre la vista previa para descargar el WebM.
+
+  La píldora sale en el video. Se reinyecta tras cada carga completa dentro del
+  mismo sitio; si la pestaña navega a otro dominio, Chrome retira `activeTab` y
+  la píldora ya no aparece (la grabación continúa).
 
 | Atajo | Acción |
 |---|---|
@@ -48,16 +61,23 @@ grosor con un objeto seleccionado, se aplica a ese objeto.
 ```
 src/
 ├── entrypoints/
-│   ├── background.ts        # action.onClicked → captura → abre el editor
-│   └── editor/              # página del editor (React)
+│   ├── background.ts        # recibe las órdenes del popup: captura, inicia/detiene grabación
+│   ├── popup/               # menú del ícono: captura o video (React)
+│   ├── editor/              # página del editor (React)
+│   ├── offscreen/           # documento oculto con MediaRecorder (grabación)
+│   ├── recording-indicator.ts # píldora inyectada en la pestaña grabada (Shadow DOM)
+│   └── recording/           # vista previa y descarga del video (React)
 ├── core/                    # lógica sin React
 │   ├── capture/             # CaptureStrategy + VisibleTabStrategy + traspaso vía storage.session
 │   ├── editor/              # EditorController, historial, estilos
 │   ├── tools/               # Tool + registro + una carpeta por herramienta
 │   ├── exporters/           # Exporter + registro + descarga y portapapeles
+│   ├── recording/           # límites, estado en storage.session y traspaso del video vía IndexedDB
+│   ├── messages.ts          # mensajes entre popup, background y offscreen
 │   └── types.ts             # CaptureContext, CaptureResult
-├── components/              # icon-toolbar, style-bar, color-picker, action-bar, toast…
-└── hooks/                   # use-editor, use-editor-shortcuts, use-capture-handoff, use-toast
+├── components/              # icon-toolbar, style-bar, color-picker, action-bar, page-chip, toast…
+├── hooks/                   # use-editor, use-editor-shortcuts, use-capture-handoff, use-recording-handoff, use-toast
+└── styles/app.css           # estilos compartidos por todas las páginas
 ```
 
 ### Puntos de extensión
@@ -81,5 +101,8 @@ embebido en el propio archivo de la fuente.
 
 ## Permisos
 
-Solo `activeTab` y `storage` (este último únicamente para `storage.session`,
-que vive en memoria). No se piden permisos de host.
+`activeTab`, `storage` (únicamente `storage.session`, que vive en memoria),
+`tabCapture` (grabar la pestaña), `offscreen` (documento oculto donde corre
+`MediaRecorder`, que el service worker no puede usar) y `scripting` (inyectar
+el indicador de grabación con el acceso de `activeTab`). No se piden permisos de
+host.
