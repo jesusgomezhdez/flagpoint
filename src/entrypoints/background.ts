@@ -1,6 +1,6 @@
 import { captureStrategies, CaptureError, DEFAULT_CAPTURE_STRATEGY, isRestrictedUrl } from '@/core/capture';
 import { HANDOFF_QUERY_PARAM, putHandoff } from '@/core/capture/handoff';
-import type { BackgroundMessage, CommandResult, IndicatorMessage, OffscreenMessage } from '@/core/messages';
+import type { BackgroundMessage, CommandResult, IndicatorMessage, OffscreenMessage, RecorderMessage } from '@/core/messages';
 import {
   clearRecordingHandoffs,
   getRecordingState,
@@ -39,7 +39,14 @@ export default defineBackground(() => {
   browser.tabs.onUpdated.addListener((tabId, changeInfo) => {
     if (changeInfo.status !== 'complete') return;
     void getRecordingState().then((state) => {
-      if (state?.tabId === tabId) void showIndicator(tabId);
+      if (state?.source === 'tab' && state.tabId === tabId) void showIndicator(tabId);
+    });
+  });
+
+  // Cerrar la pestaña que graba en modo ventana descarta el video: se limpia el estado para no dejar «REC» colgado.
+  browser.tabs.onRemoved.addListener((tabId) => {
+    void getRecordingState().then((state) => {
+      if (state?.source === 'window' && state.recorderTabId === tabId) void resetRecording();
     });
   });
 
@@ -57,6 +64,8 @@ function handleMessage(message: BackgroundMessage): Promise<CommandResult | Reco
       return takeScreenshot(message.tabId);
     case 'start-recording':
       return startRecording(message.tabId);
+    case 'window-recording-started':
+      return startWindowRecording(message.tabId, message.recorderTabId);
     case 'stop-recording':
       return stopRecording();
     case 'recording-finished':
@@ -138,19 +147,37 @@ async function startRecording(tabId: number): Promise<CommandResult> {
     return result ?? { ok: false, error: 'No se pudo iniciar la grabación.' };
   }
 
-  await setRecordingState({ tabId, startedAt: Date.now() });
-  await browser.action.setBadgeBackgroundColor({ color: '#e11d48' });
-  await browser.action.setBadgeText({ text: 'REC' });
-  await browser.action.setTitle({ title: 'Flagpoint · Grabando' });
+  await markRecording({ source: 'tab', tabId });
   await showIndicator(tabId);
   return { ok: true };
 }
 
+/** La pestaña `window-recorder` ya está grabando: solo queda registrarlo. */
+async function startWindowRecording(tabId: number, recorderTabId: number | undefined): Promise<CommandResult> {
+  // Restos de grabaciones cuya vista previa nunca se abrió (el video nuevo aún no se ha entregado).
+  await clearRecordingHandoffs();
+  return markRecording({ source: 'window', tabId, recorderTabId });
+}
+
+/** Registra la grabación en curso (estado del popup e ícono «REC»). */
+async function markRecording(state: Omit<RecordingState, 'startedAt'>): Promise<CommandResult> {
+  await setRecordingState({ ...state, startedAt: Date.now() });
+  await browser.action.setBadgeBackgroundColor({ color: '#e11d48' });
+  await browser.action.setBadgeText({ text: 'REC' });
+  await browser.action.setTitle({ title: 'Flagpoint · Grabando' });
+  return { ok: true };
+}
+
 async function stopRecording(): Promise<CommandResult> {
+  const state = await getRecordingState();
+  const message: OffscreenMessage | RecorderMessage =
+    state?.source === 'window'
+      ? { target: 'recorder', type: 'stop-recording' }
+      : { target: 'offscreen', type: 'stop-recording' };
   try {
-    await browser.runtime.sendMessage({ target: 'offscreen', type: 'stop-recording' } satisfies OffscreenMessage);
+    await browser.runtime.sendMessage(message);
   } catch (err) {
-    // El documento offscreen ya no existe (p. ej., Chrome lo cerró): no hay nada que recuperar.
+    // El documento offscreen o la pestaña grabadora ya no existe: no hay nada que recuperar.
     console.error('[flagpoint] stop-recording failed', err);
     await resetRecording();
     return { ok: false, error: 'La grabación se interrumpió y no se pudo recuperar.' };
@@ -167,7 +194,7 @@ async function finishRecording(handoffId: string): Promise<CommandResult> {
 
 async function resetRecording() {
   const state = await getRecordingState();
-  if (state) await removeIndicator(state.tabId);
+  if (state?.source === 'tab') await removeIndicator(state.tabId);
   await setRecordingState(undefined);
   await browser.action.setBadgeText({ text: '' });
   await browser.action.setTitle({ title: 'Flagpoint' });

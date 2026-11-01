@@ -1,4 +1,4 @@
-# Ficha de Chrome Web Store — Flagpoint 1.1.0
+# Ficha de Chrome Web Store — Flagpoint 1.2.0
 
 Textos listos para copiar en el Developer Dashboard. Cada sección indica la
 pestaña y el campo donde va.
@@ -22,7 +22,7 @@ Flagpoint convierte cualquier pantalla en un reporte claro en segundos.
 
 Haz clic en el ícono de la extensión y elige "Capturar pantalla": Flagpoint captura la pestaña que estás viendo y la abre en un editor donde puedes señalar exactamente qué está mal: un botón desalineado, un texto incorrecto, un error en un flujo de pruebas. Después copia la imagen y pégala directo en tu ticket, chat o documento.
 
-¿El bug solo se entiende en movimiento? Elige "Grabar video", reproduce el problema y detén la grabación: verás la vista previa y podrás descargar el video para adjuntarlo a tu reporte.
+¿El bug solo se entiende en movimiento? Elige "Grabar pestaña", reproduce el problema y detén la grabación: verás la vista previa y podrás descargar el video para adjuntarlo a tu reporte.
 
 Pensada para equipos de QA, desarrollo, producto y diseño que reportan hallazgos todos los días.
 
@@ -43,7 +43,8 @@ EXPORTA EN UN CLIC
 
 GRABACIÓN DE VIDEO
 • Graba la pestaña activa hasta 5 minutos (solo imagen, sin audio)
-• Indicador discreto en la propia pestaña con el tiempo y un botón para detener (se puede arrastrar)
+• Nuevo: "Grabar ventana o pantalla" para que el video siga tus cambios de pestaña y muestre la barra de direcciones con la URL
+• Indicador discreto en la propia pestaña con el tiempo y un botón para detener (se puede arrastrar; solo al grabar la pestaña)
 • Indicador "REC" en el ícono y atajo de teclado (Alt+Shift+S) para detener
 • Vista previa al terminar y descarga en formato WebM
 
@@ -57,7 +58,7 @@ PRIVACIDAD PRIMERO
 • Todo ocurre en tu navegador: las capturas y los videos no se envían a ningún servidor
 • No guarda historial ni requiere cuenta
 • No graba audio ni usa micrófono o cámara
-• Solo accede a la pestaña cuando tú eliges capturar o grabar
+• Solo accede a la pestaña, ventana o pantalla cuando tú eliges capturar o grabar
 
 Nota: por restricciones de Chrome, no es posible capturar ni grabar páginas internas del navegador (chrome://), la Chrome Web Store ni otras extensiones.
 ```
@@ -88,7 +89,7 @@ Ideas para las capturas:
 ### Propósito único (Single purpose)
 
 ```text
-Documentar hallazgos visuales de una pestaña del navegador para reportes de QA: capturar la pestaña visible y abrirla en un editor local para anotarla y exportarla (portapapeles o PNG), o grabarla en video para revisarla y descargarla (WebM).
+Documentar hallazgos visuales de una pestaña del navegador para reportes de QA: capturar la pestaña visible y abrirla en un editor local para anotarla y exportarla (portapapeles o PNG), o grabarla en video, junto con la ventana o pantalla elegida por el usuario si necesita mostrar su navegación entre pestañas, para revisarla y descargarla (WebM).
 ```
 
 ### Justificación de permisos
@@ -105,7 +106,7 @@ Se usa exclusivamente chrome.storage.session (en memoria) para pasar la captura 
 
 **tabCapture**
 ```text
-Se usa chrome.tabCapture.getMediaStreamId para grabar en video (sin audio) la pestaña activa únicamente cuando el usuario abre el popup y elige "Grabar video". La grabación dura hasta que el usuario la detiene, cierra la pestaña o se alcanzan 5 minutos; el ícono muestra "REC" mientras tanto. El video se procesa solo en el dispositivo y el usuario decide si lo descarga.
+Se usa chrome.tabCapture.getMediaStreamId para grabar en video (sin audio) la pestaña activa únicamente cuando el usuario abre el popup y elige "Grabar pestaña". La grabación dura hasta que el usuario la detiene, cierra la pestaña o se alcanzan 5 minutos; el ícono muestra "REC" mientras tanto. El video se procesa solo en el dispositivo y el usuario decide si lo descarga.
 ```
 
 **scripting**
@@ -115,7 +116,7 @@ Se usa chrome.scripting.executeScript, con el acceso temporal que otorga activeT
 
 **offscreen**
 ```text
-Los service workers de Manifest V3 no pueden usar getUserMedia ni MediaRecorder. Se crea un documento offscreen (motivo USER_MEDIA) solo mientras dura la grabación para convertir el stream de la pestaña en un video WebM, y se cierra al terminar.
+Los service workers de Manifest V3 no pueden usar getUserMedia ni MediaRecorder. Se crea un documento offscreen (motivo USER_MEDIA) solo mientras dura la grabación para convertir el stream de la pestaña en un video WebM, y se cierra al terminar. La grabación de ventana o pantalla (opción "Grabar ventana o pantalla") no usa el documento offscreen ni requiere permisos: una pestaña de la extensión llama a getDisplayMedia, Chrome muestra su selector y se graba solo lo que el usuario elige.
 ```
 
 ### Código remoto
@@ -161,8 +162,13 @@ No requiere cuenta ni configuración. Para probar:
 4. Usa la barra superior para dibujar, agregar flechas, texto o post-its.
 5. Pulsa "Copiar al portapapeles" o "Descargar PNG" para exportar.
 Para probar el video:
-6. Vuelve al sitio, abre el ícono de Flagpoint y elige "Grabar video" (el ícono muestra "REC").
+6. Vuelve al sitio, abre el ícono de Flagpoint y elige "Grabar pestaña" (el ícono muestra "REC").
 7. Navega o haz scroll unos segundos y pulsa el botón ■ del indicador en la esquina de la página (o abre el ícono y pulsa "Detener y ver video", o usa Alt+Shift+S).
 8. Se abre la vista previa; pulsa "Descargar video" para guardar el archivo WebM.
+Para probar la grabación de ventana o pantalla:
+9. Abre el ícono de Flagpoint y elige "Grabar ventana o pantalla". Se abre una pestaña fija de Flagpoint con el selector de Chrome; elige la ventana del navegador y pulsa "Compartir".
+10. La grabación empieza y vuelves a tu pestaña. Cambia entre varias pestañas o navega a otro sitio: el video sigue tus cambios y muestra la barra de direcciones con la URL.
+11. Detén la grabación con "Dejar de compartir" de Chrome, con "Detener y ver video" en el ícono o con Alt+Shift+S. Se abre la vista previa y la pestaña fija se cierra sola.
+En macOS, Chrome necesita el permiso de "Grabación de pantalla" (Ajustes del Sistema › Privacidad y seguridad) para grabar ventanas o la pantalla; sin él, la extensión muestra un mensaje explicativo.
 Las páginas internas de Chrome (chrome://) no se pueden capturar; en ese caso la extensión muestra un mensaje explicativo.
 ```

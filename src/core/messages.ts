@@ -8,6 +8,11 @@
 export type BackgroundMessage =
   | { target: 'background'; type: 'take-screenshot'; tabId: number }
   | { target: 'background'; type: 'start-recording'; tabId: number }
+  /**
+   * La pestaña `window-recorder` (`recorderTabId`) ya está grabando la ventana o
+   * pantalla elegida; `tabId` es la pestaña desde la que se pidió grabar.
+   */
+  | { target: 'background'; type: 'window-recording-started'; tabId: number; recorderTabId?: number }
   | { target: 'background'; type: 'stop-recording' }
   | { target: 'background'; type: 'recording-finished'; handoffId: string }
   /** Responde con el `RecordingState` en curso o `null`. */
@@ -25,6 +30,9 @@ export type OffscreenMessage =
       title: string;
     }
   | { target: 'offscreen'; type: 'stop-recording' };
+
+/** Service worker → pestaña `window-recorder`, que graba en lugar del offscreen en modo ventana. */
+export type RecorderMessage = { target: 'recorder'; type: 'stop-recording' };
 
 /** Service worker → indicador inyectado en la pestaña grabada (vía `tabs.sendMessage`). */
 export type IndicatorMessage = { target: 'indicator'; type: 'remove' };

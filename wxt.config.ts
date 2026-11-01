@@ -14,6 +14,7 @@ export default defineConfig({
     description: 'Captura o graba en video la pestaña y anota las capturas con flechas, formas, texto y post-its para reportar bugs de QA.',
     // tabCapture + offscreen: grabar la pestaña en un documento oculto (el service worker no puede usar MediaRecorder).
     // scripting: inyectar el indicador de grabación en la pestaña grabada (con el acceso de activeTab).
+    // La grabación de ventana o pantalla usa getDisplayMedia desde una pestaña de la extensión: no requiere permiso.
     permissions: ['activeTab', 'storage', 'tabCapture', 'offscreen', 'scripting'],
     // El popup (entrypoints/popup) deja elegir entre captura y grabación.
     action: {

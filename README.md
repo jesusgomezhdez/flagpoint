@@ -29,18 +29,30 @@ pnpm build          # genera .output/chrome-mv3
 
 ## Uso
 
-Al hacer clic en el ícono se abre un menú con dos opciones:
+Al hacer clic en el ícono se abre un menú con tres opciones:
 
 - **Capturar pantalla**: captura la pestaña visible y abre el editor en una
   pestaña nueva.
-- **Grabar video**: graba la pestaña (solo imagen, sin audio, máx. 5 min). En
+- **Grabar pestaña**: graba la pestaña (solo imagen, sin audio, máx. 5 min). En
   la pestaña aparece una píldora arrastrable con el tiempo y un botón ■ para
   detener; el ícono muestra `REC`. Se detiene con ese botón, con **Detener y ver
   video** en el popup, con `Alt+Shift+S` (configurable en
   `chrome://extensions/shortcuts`), al cerrar la pestaña o al llegar al límite.
   Al terminar se abre la vista previa para descargar el WebM.
 
-  La píldora sale en el video. Se reinyecta tras cada carga completa dentro del
+- **Grabar ventana o pantalla**: abre el selector de Chrome y graba la ventana
+  o pantalla elegida (solo imagen, sin audio, máx. 5 min). Al grabar la ventana
+  del navegador, el video sigue los cambios de pestaña y muestra la barra de
+  direcciones con la URL. Chrome muestra su propia barra de «compartiendo»; se
+  detiene con **Dejar de compartir**, con **Detener y ver video** en el popup o
+  con `Alt+Shift+S`. No inyecta la píldora. La graba una pestaña fija de la
+  extensión con `getDisplayMedia` (el popup se cierra al abrir el selector y el
+  documento offscreen no puede mostrarlo); al empezar devuelve el foco a la
+  pestaña de origen y se cierra sola al entregar el video. Si se cierra a mitad,
+  la grabación se descarta. En macOS, Chrome necesita el permiso de «Grabación
+  de pantalla» en Ajustes del Sistema.
+
+  La píldora (solo al grabar la pestaña) sale en el video. Se reinyecta tras cada carga completa dentro del
   mismo sitio; si la pestaña navega a otro dominio, Chrome retira `activeTab` y
   la píldora ya no aparece (la grabación continúa).
 
@@ -65,6 +77,7 @@ src/
 │   ├── popup/               # menú del ícono: captura o video (React)
 │   ├── editor/              # página del editor (React)
 │   ├── offscreen/           # documento oculto con MediaRecorder (grabación)
+│   ├── window-recorder/     # pestaña fija que elige y graba una ventana o pantalla (getDisplayMedia)
 │   ├── recording-indicator.ts # píldora inyectada en la pestaña grabada (Shadow DOM)
 │   └── recording/           # vista previa y descarga del video (React)
 ├── core/                    # lógica sin React
@@ -104,5 +117,6 @@ embebido en el propio archivo de la fuente.
 `activeTab`, `storage` (únicamente `storage.session`, que vive en memoria),
 `tabCapture` (grabar la pestaña), `offscreen` (documento oculto donde corre
 `MediaRecorder`, que el service worker no puede usar) y `scripting` (inyectar
-el indicador de grabación con el acceso de `activeTab`). No se piden permisos de
-host.
+el indicador de grabación con el acceso de `activeTab`). La grabación de
+ventana o pantalla usa `getDisplayMedia` y no necesita permisos. No se piden
+permisos de host.

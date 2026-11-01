@@ -1,9 +1,16 @@
 import { useEffect, useState, type ComponentType } from 'react';
-import { Camera, CircleAlert, Flag, LoaderCircle, Square, Video } from 'lucide-react';
+import { AppWindow, Camera, CircleAlert, Flag, LoaderCircle, Square, Video } from 'lucide-react';
 import type { BackgroundMessage, CommandResult } from '@/core/messages';
-import { formatClock, getRecordingState, MAX_RECORDING_MS, watchRecordingState, type RecordingState } from '@/core/recording';
+import {
+  formatClock,
+  getRecordingState,
+  MAX_RECORDING_MS,
+  watchRecordingState,
+  WINDOW_RECORDER_TAB_PARAM,
+  type RecordingState,
+} from '@/core/recording';
 
-type Busy = 'screenshot' | 'recording' | 'stop' | null;
+type Busy = 'screenshot' | 'recording' | 'window-recording' | 'stop' | null;
 
 export default function App() {
   // `undefined` = aún cargando; `null` = sin grabación en curso.
@@ -25,14 +32,27 @@ export default function App() {
     else setError(result?.error ?? 'Ocurrió un error inesperado. Intenta de nuevo.');
   }
 
-  async function runOnActiveTab(action: 'screenshot' | 'recording') {
+  async function runOnActiveTab(action: 'screenshot' | 'recording' | 'window-recording') {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     if (tab?.id === undefined) {
       setError('No se encontró la pestaña activa.');
       return;
     }
-    const type = action === 'screenshot' ? 'take-screenshot' : 'start-recording';
-    await run(action, { target: 'background', type, tabId: tab.id });
+    if (action === 'screenshot') {
+      await run(action, { target: 'background', type: 'take-screenshot', tabId: tab.id });
+      return;
+    }
+    if (action === 'recording') {
+      await run(action, { target: 'background', type: 'start-recording', tabId: tab.id });
+      return;
+    }
+
+    // El popup se cierra al perder el foco y el offscreen no puede abrir el selector de Chrome
+    // (getDisplayMedia), así que lo abre y graba una pestaña fija de la extensión en esta misma ventana.
+    // Al empezar a grabar devuelve el foco a la pestaña actual.
+    const url = `${browser.runtime.getURL('/window-recorder.html')}?${WINDOW_RECORDER_TAB_PARAM}=${tab.id}`;
+    await browser.tabs.create({ url, windowId: tab.windowId, pinned: true, active: true });
+    window.close();
   }
 
   return (
@@ -64,11 +84,19 @@ export default function App() {
             />
             <ModeButton
               icon={Video}
-              label="Grabar video"
+              label="Grabar pestaña"
               hint={`Hasta ${MAX_RECORDING_MS / 60_000} min · sin audio`}
               busy={busy === 'recording'}
               disabled={busy !== null}
               onClick={() => void runOnActiveTab('recording')}
+            />
+            <ModeButton
+              icon={AppWindow}
+              label="Grabar ventana o pantalla"
+              hint="Varias pestañas con URL o tu pantalla completa"
+              busy={busy === 'window-recording'}
+              disabled={busy !== null}
+              onClick={() => void runOnActiveTab('window-recording')}
             />
           </div>
         )}
@@ -143,7 +171,7 @@ function RecordingPanel({
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-2 text-sm font-medium text-slate-900">
           <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-rose-500" />
-          Grabando pestaña
+          {recording.source === 'window' ? 'Grabando ventana' : 'Grabando pestaña'}
         </span>
         <span className="text-xs font-medium text-slate-500 tabular-nums">
           {formatClock(elapsed)} / {formatClock(MAX_RECORDING_MS)}
@@ -159,7 +187,8 @@ function RecordingPanel({
         Detener y ver video
       </button>
       <p className="text-center text-[11px] leading-snug text-slate-500">
-        También puedes detenerla desde la pestaña{shortcut ? ` o con ${shortcut}` : ''}.
+        También puedes detenerla {recording.source === 'window' ? 'con «Dejar de compartir» de Chrome' : 'desde la pestaña'}
+        {shortcut ? ` o con ${shortcut}` : ''}.
       </p>
     </div>
   );
