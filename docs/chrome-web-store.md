@@ -154,21 +154,11 @@ https://jesusgomez.notion.site/Pol-ticas-de-privacidad-de-Flagpoint-401f264c7ac4
 
 ## Instrucciones para el revisor (opcional)
 
+Va en *Instrucciones de la prueba › Instrucciones adicionales*, que admite **500 caracteres** como máximo (este texto tiene 481).
+
 ```text
-No requiere cuenta ni configuración. Para probar:
-1. Abre cualquier sitio web (por ejemplo https://example.com).
-2. Haz clic en el ícono de Flagpoint en la barra de herramientas y elige "Capturar pantalla".
-3. Se abre una pestaña con el editor y la captura cargada.
-4. Usa la barra superior para dibujar, agregar flechas, texto o post-its.
-5. Pulsa "Copiar al portapapeles" o "Descargar PNG" para exportar.
-Para probar el video:
-6. Vuelve al sitio, abre el ícono de Flagpoint y elige "Grabar pestaña" (el ícono muestra "REC").
-7. Navega o haz scroll unos segundos y pulsa el botón ■ del indicador en la esquina de la página (o abre el ícono y pulsa "Detener y ver video", o usa Alt+Shift+S).
-8. Se abre la vista previa; pulsa "Descargar video" para guardar el archivo WebM.
-Para probar la grabación de ventana o pantalla:
-9. Abre el ícono de Flagpoint y elige "Grabar ventana o pantalla". Se abre una pestaña fija de Flagpoint con el selector de Chrome; elige la ventana del navegador y pulsa "Compartir".
-10. La grabación empieza y vuelves a tu pestaña. Cambia entre varias pestañas o navega a otro sitio: el video sigue tus cambios y muestra la barra de direcciones con la URL.
-11. Detén la grabación con "Dejar de compartir" de Chrome, con "Detener y ver video" en el ícono o con Alt+Shift+S. Se abre la vista previa y la pestaña fija se cierra sola.
-En macOS, Chrome necesita el permiso de "Grabación de pantalla" (Ajustes del Sistema › Privacidad y seguridad) para grabar ventanas o la pantalla; sin él, la extensión muestra un mensaje explicativo.
-Las páginas internas de Chrome (chrome://) no se pueden capturar; en ese caso la extensión muestra un mensaje explicativo.
+Sin cuenta ni configuración. Abre cualquier sitio (ej. https://example.com) y pulsa el ícono de Flagpoint:
+1. "Capturar pantalla": abre el editor; anota y pulsa "Copiar al portapapeles" o "Descargar PNG".
+2. "Grabar pestaña": navega unos segundos, detén con "Detener y ver video" (ícono) o Alt+Shift+S y descarga el WebM.
+3. "Grabar ventana o pantalla": elige la ventana en el selector de Chrome, cambia de pestaña y detén igual. En macOS requiere permiso de Grabación de pantalla.
 ```
